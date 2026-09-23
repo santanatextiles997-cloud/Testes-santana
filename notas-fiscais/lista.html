@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
+<title>Registros — Notas Santana</title>
+<meta name="theme-color" content="#0A1929"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/png" href="icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="stylesheet" href="app-style.css"/>
+<style>
+  /* Estilos só desta página. O resto (tag-card, chip, modal, fab...) vem do app-style.css. */
+  .reg-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px;}
+  .reg-titulo{font-size:14.5px;font-weight:800;color:var(--color-on-surface);letter-spacing:-.01em;line-height:1.25;}
+  .reg-data{font-size:11.5px;color:var(--color-muted-light);font-family:var(--font-mono);margin-bottom:10px;}
+  .reg-rodape{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--color-muted-light);font-family:var(--font-mono);margin-top:11px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="topbar-btn" onclick="history.back()" aria-label="Voltar">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="topbar-title">Registros</div>
+</div>
+
+<div class="content">
+  <div class="page-header">
+    <div class="page-title">Registros</div>
+    <div class="page-count" id="tvContagem">Carregando...</div>
+  </div>
+
+  <!-- Indicadores que também filtram a lista (toque para filtrar) -->
+  <div class="stats-row">
+    <div class="stat-mini" id="cardPendentes" role="button" tabindex="0">
+      <div class="label">Pendentes</div>
+      <div class="value" id="tvPendentes">—</div>
+      <div class="hint">toque para filtrar</div>
+    </div>
+    <div class="stat-mini">
+      <div class="label">Hoje</div>
+      <div class="value" id="tvHoje">—</div>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <input class="search-input" id="etBusca" type="search" placeholder="Buscar por código ou responsável"/>
+  </div>
+
+  <div id="progressWrap"><div class="spinner"></div></div>
+  <div class="list-wrap" id="listWrap" style="display:none;"></div>
+</div>
+
+<a class="fab" href="formulario.html" aria-label="Novo registro">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</a>
+
+<!-- MODAL DE DETALHE (bottom sheet) -->
+<div class="modal-overlay" id="modalDetalhe">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <div class="modal-title" id="detTitulo">Registro</div>
+      <button class="modal-close" onclick="fecharModal('modalDetalhe')" aria-label="Fechar">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="detail-rows" id="detCorpo"></div>
+    <button class="btn btn-success btn-block" id="btnConcluir" style="margin-top:14px;">Concluir registro</button>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a class="nav-item" href="index.html" data-page="home">
+    <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    <span>Início</span>
+  </a>
+  <a class="nav-item" href="lista.html" data-page="lista">
+    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    <span>Registros</span>
+  </a>
+  <a class="nav-item" href="formulario.html" data-page="novo">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <span>Novo</span>
+  </a>
+</div>
+
+<script>
+window.APP_DEMO = {
+  '/registros': { ok: true, registros: [
+    { id: 'R-1042', codigo: '90T09724 001', responsavel: 'Lincoln Silva', tipo: 'Peça misturada', status: 'Pendente', criadoEm: new Date().toISOString(), obs: 'Peça encontrada na pilha P5, artigo diferente do endereço.' },
+    { id: 'R-1041', codigo: '90T05531 002', responsavel: 'Helder Costa', tipo: 'Avaria', status: 'Pendente', criadoEm: new Date(Date.now() - 86400000).toISOString(), obs: '' },
+    { id: 'R-1039', codigo: '90T01870 004', responsavel: 'Lincoln Silva', tipo: 'Divergência', status: 'Concluído', criadoEm: new Date(Date.now() - 3 * 86400000).toISOString(), obs: 'Conferido e corrigido no sistema.' },
+  ] },
+};
+</script>
+<script src="app-shell.js"></script>
+<script>
+initBottomNav('lista');
+
+let REGISTROS = [];
+let SO_PENDENTES = false;
+let REGISTRO_ABERTO = null;
+
+// Cor do triângulo do tag-card = estado do registro
+const COR_STATUS = { 'Pendente': 'var(--color-warning)', 'Concluído': 'var(--color-success)' };
+
+async function carregar() {
+  try {
+    // Contrato: GET {apiPrefixo}/registros → { ok, registros: [{ id, codigo, responsavel, tipo, status, criadoEm, obs }] }
+    const d = await apiGet('/registros');
+    REGISTROS = d.registros || [];
+    atualizarIndicadores();
+    renderLista();
+  } catch (e) {
+    toast('Erro ao carregar registros', 'error');
+  } finally {
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('listWrap').style.display = 'block';
+  }
+}
+
+function ehHoje(iso) { return new Date(iso).toDateString() === new Date().toDateString(); }
+
+function atualizarIndicadores() {
+  const pend = REGISTROS.filter((r) => r.status !== 'Concluído').length;
+  document.getElementById('tvPendentes').textContent = pend;
+  document.getElementById('tvHoje').textContent = REGISTROS.filter((r) => ehHoje(r.criadoEm)).length;
+  document.getElementById('tvContagem').textContent = REGISTROS.length + (REGISTROS.length === 1 ? ' registro' : ' registros');
+}
+
+function filtrados() {
+  const q = document.getElementById('etBusca').value.trim().toLowerCase();
+  return REGISTROS.filter((r) => {
+    if (SO_PENDENTES && r.status === 'Concluído') return false;
+    if (!q) return true;
+    return [r.codigo, r.responsavel, r.tipo, r.id].some((v) => String(v || '').toLowerCase().includes(q));
+  });
+}
+
+function renderLista() {
+  const wrap = document.getElementById('listWrap');
+  const lista = filtrados();
+  if (!lista.length) {
+    wrap.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <h3>Nenhum registro encontrado</h3><p>Ajuste a busca ou o filtro.</p></div>`;
+    return;
+  }
+  // Tudo que vem do servidor passa por escHtml antes de entrar no innerHTML.
+  wrap.innerHTML = lista.map((r) => `
+    <div class="tag-card clicavel" style="--tag-color:${COR_STATUS[r.status] || 'var(--color-primary)'};" onclick="abrirDetalhe('${escHtml(r.id)}')">
+      <div class="reg-top">
+        <div class="reg-titulo">${escHtml(r.tipo)}</div>
+        <span class="badge ${r.status === 'Concluído' ? 'badge-success' : 'badge-warning'}">${escHtml(r.status)}</span>
+      </div>
+      <div class="reg-data">${fmtDataHora(r.criadoEm)}</div>
+      <div class="chip-row"><span class="chip accent">${escHtml(r.codigo)}</span><span class="chip neutro">${escHtml(r.id)}</span></div>
+      <div class="reg-rodape"><span>${escHtml(r.responsavel)}</span></div>
+    </div>`).join('');
+}
+
+function abrirDetalhe(id) {
+  const r = REGISTROS.find((x) => x.id === id);
+  if (!r) return;
+  REGISTRO_ABERTO = r;
+  document.getElementById('detTitulo').textContent = r.tipo;
+  document.getElementById('detCorpo').innerHTML = `
+    <div class="detail-row"><span class="k">Código</span><span class="v">${escHtml(r.codigo)}</span></div>
+    <div class="detail-row"><span class="k">Responsável</span><span class="v">${escHtml(r.responsavel)}</span></div>
+    <div class="detail-row"><span class="k">Criado em</span><span class="v">${fmtDataHora(r.criadoEm)}</span></div>
+    <div class="detail-row"><span class="k">Status</span><span class="v">${escHtml(r.status)}</span></div>
+    ${r.obs ? `<div class="nota" style="margin-top:10px;"><div class="rotulo">Observação</div>${escHtml(r.obs)}</div>` : ''}`;
+  document.getElementById('btnConcluir').style.display = r.status === 'Concluído' ? 'none' : 'flex';
+  abrirModal('modalDetalhe');
+}
+
+document.getElementById('btnConcluir').addEventListener('click', async () => {
+  if (!REGISTRO_ABERTO) return;
+  const btn = document.getElementById('btnConcluir');
+  btn.disabled = true;
+  try {
+    // Contrato: POST {apiPrefixo}/registros/concluir { id } — o servidor confere se o usuário pode.
+    await apiPost('/registros/concluir', { id: REGISTRO_ABERTO.id });
+    REGISTRO_ABERTO.status = 'Concluído';
+    fecharModal('modalDetalhe');
+    atualizarIndicadores();
+    renderLista();
+    toast('Registro concluído', 'success');
+  } catch (e) {
+    toast(e.message || 'Não foi possível concluir', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+const cardPend = document.getElementById('cardPendentes');
+cardPend.addEventListener('click', () => {
+  SO_PENDENTES = !SO_PENDENTES;
+  cardPend.classList.toggle('active', SO_PENDENTES);
+  renderLista();
+});
+document.getElementById('etBusca').addEventListener('input', renderLista);
+
+carregar();
+</script>
+</body>
+</html>

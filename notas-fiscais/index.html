@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
+<title>Início — Notas Santana</title>
+<meta name="theme-color" content="#0A1929"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/png" href="icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="stylesheet" href="app-style.css"/>
+<style>
+  .home-header{padding:22px 16px 4px;}
+  .home-title{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--color-on-surface);margin-top:5px;}
+  .stats-grid + .info-strip{margin-top:-6px;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="topbar-btn" id="btnGaveta" aria-label="Abrir menu">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <div class="topbar-title">Notas Santana</div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="title">Módulos</div>
+    <button class="drawer-close" id="btnFecharGaveta" aria-label="Fechar menu">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-divider"></div>
+  <div class="drawer-label">MÓDULOS</div>
+
+  <a class="drawer-item" href="lista.html">
+    <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+    <div class="drawer-item-text"><div class="name">Registros</div><div class="desc">Lista e acompanhamento</div></div>
+    <div class="drawer-item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+  </a>
+  <a class="drawer-item" href="formulario.html">
+    <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    <div class="drawer-item-text"><div class="name">Novo registro</div><div class="desc">Cadastrar uma ocorrência</div></div>
+    <div class="drawer-item-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+  </a>
+
+  <div data-somente-adm style="display:none;">
+    <div class="drawer-label">ADMINISTRAÇÃO</div>
+    <!-- Itens exclusivos de ADM aqui (o backend também precisa bloquear!) -->
+  </div>
+
+  <div class="drawer-spacer"></div>
+  <div class="drawer-divider"></div>
+
+  <button class="drawer-item" id="btnSair" style="width:calc(100% - 20px);text-align:left;margin-top:8px;">
+    <div class="drawer-item-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+    <div class="drawer-item-text"><div class="name">Sair</div><div class="desc">Encerrar a sessão</div></div>
+  </button>
+
+  <div class="drawer-profile">
+    <div class="drawer-item-text" style="padding:0;">
+      <div class="name" id="drawerNome">—</div>
+      <div class="desc" id="drawerFuncao">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="content">
+  <div class="home-header">
+    <div class="home-eyebrow">Dashboard operacional</div>
+    <div class="home-title" id="tvBoasVindas">Bem-vindo</div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card" style="--accent-color:var(--color-accent);">
+      <div class="icon">📦</div>
+      <div class="label">Total de itens</div>
+      <div class="value" id="tvTotal">—</div>
+    </div>
+    <div class="stat-card" style="--accent-color:var(--color-warning);">
+      <div class="icon">📋</div>
+      <div class="label">Pendentes</div>
+      <div class="value" id="tvPendentes">—</div>
+    </div>
+  </div>
+
+  <div class="info-strip" id="faixaAtualizacao" style="display:none;">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span>Atualizado em <b id="tvAtualizado">—</b></span>
+  </div>
+
+  <div class="section-title">Acesso rápido</div>
+
+  <a class="action-card" href="formulario.html">
+    <div class="icon-wrap"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    <div class="text"><h4>Novo registro</h4><p>Cadastrar uma ocorrência</p></div>
+    <div class="arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+  </a>
+  <a class="action-card" href="lista.html">
+    <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div>
+    <div class="text"><h4>Ver registros</h4><p>Filtrar, buscar e concluir</p></div>
+    <div class="arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+  </a>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a class="nav-item" href="index.html" data-page="home">
+    <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    <span>Início</span>
+  </a>
+  <a class="nav-item" href="lista.html" data-page="lista">
+    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    <span>Registros</span>
+  </a>
+  <a class="nav-item" href="formulario.html" data-page="novo">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <span>Novo</span>
+  </a>
+</div>
+
+<script>
+// Modo demo (APP.demo = true): dados de exemplo só para ver o visual, sem servidor.
+window.APP_DEMO = {
+  '/dashboard': { ok: true, total: 1284, pendentes: 7, atualizadoEm: new Date().toISOString() },
+};
+</script>
+<script src="app-shell.js"></script>
+<script>
+initDrawer();
+initBottomNav('home');
+
+document.getElementById('tvBoasVindas').textContent = 'Bem-vindo, ' + SESSAO.nome;
+
+async function carregarDashboard() {
+  try {
+    // Contrato: GET {apiPrefixo}/dashboard → { ok, total, pendentes, atualizadoEm }
+    // O usuário vem do TOKEN no servidor; nunca mande matrícula/id na query.
+    const d = await apiGet('/dashboard');
+    document.getElementById('tvTotal').textContent = fmtNumero(d.total);
+    document.getElementById('tvPendentes').textContent = fmtNumero(d.pendentes);
+    if (d.atualizadoEm) {
+      document.getElementById('tvAtualizado').textContent = fmtDataHora(d.atualizadoEm);
+      document.getElementById('faixaAtualizacao').style.display = 'flex';
+    }
+  } catch (e) {
+    document.getElementById('tvTotal').textContent = '—';
+    document.getElementById('tvPendentes').textContent = '—';
+  }
+}
+carregarDashboard();
+</script>
+</body>
+</html>
