@@ -373,7 +373,7 @@ tfoot td{padding:9px 12px;font-size:12px;font-weight:700;color:var(--accent-lt);
 <div id="toast"></div>
 <script>
 var DADOS   = [];
-var API_BASE = 'https://SEU_WORKER_AQUI.workers.dev'; // ← cole aqui a URL do Worker
+var API_BASE = '/api'; // ← Pages Function — mesmo domínio, sem Worker separado
 
 function apiCall(method, path, body) {
   var opts = { method: method, headers: {} };
