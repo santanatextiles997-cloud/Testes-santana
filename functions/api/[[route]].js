@@ -185,7 +185,7 @@ async function emailColeta(body, env) {
     if (transp.toUpperCase()!==transportadora.toUpperCase()) return;
     if (norm(r[10])||nfsEmbarcadas[nf]) return;
     if (norm(r[11])) return;
-    notas.push({ nf, cliente:String(r[2]||'').trim(), uf:String(r[3]||'').trim().toUpperCase(),
+    notas.push({ nf, emissao:fmtDate(r[1]), cliente:String(r[2]||'').trim(), uf:String(r[3]||'').trim().toUpperCase(),
       volumes:toNum(r[4]), pesoBruto:toNum(r[5]), metragem:toNum(r[6]),
       transportadora:transp, retida:norm(r[9])||!!nfsRetidas[nf] });
   });
