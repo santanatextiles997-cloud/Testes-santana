@@ -59,7 +59,7 @@ async function googleToken(env) {
 // ── SHEETS API ───────────────────────────────────────────────────────
 async function sheetsRead(range, env) {
   const tok = await googleToken(env);
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueRenderOption=UNFORMATTED_VALUE`;
   const r = await fetch(url, { headers:{ Authorization:`Bearer ${tok}` } });
   if (!r.ok) throw new Error('Sheets read: ' + await r.text());
   return (await r.json()).values || [];
