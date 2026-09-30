@@ -151,19 +151,19 @@ async function importar(body, env) {
   const colA = await sheetsRead(`${SHEET_NAME}!A2:A`, env);
   const mapa = {};
   colA.forEach((r,i) => { const nf=String(r[0]||'').trim(); if(nf) mapa[nf]=i+2; });
-  const updates=[], inserts=[];
-  let ignoradas=0;
+  const inserts=[];
+  const jaExistentes=[];
+  let semNf=0;
   lista.forEach(n => {
     const nf = String(n.nf||'').trim();
-    if (!nf) { ignoradas++; return; }
-    const row = notaToRow(n);
-    if (mapa[nf]) updates.push({ range:`${SHEET_NAME}!A${mapa[nf]}:L${mapa[nf]}`, majorDimension:'ROWS', values:[row] });
-    else inserts.push(row);
+    if (!nf) { semNf++; return; }
+    if (mapa[nf]) { jaExistentes.push(nf); return; } // já existe no painel — ignora, não sobrescreve
+    inserts.push(notaToRow(n));
   });
-  if (updates.length) await sheetsBatch(updates, env);
   if (inserts.length) await sheetsAppend(inserts, env);
-  return { sucesso:true, inseridas:inserts.length, atualizadas:updates.length, ignoradas, erros:[],
-    mensagem:`Importação concluída! ${inserts.length} inseridas, ${updates.length} atualizadas, ${ignoradas} ignoradas.` };
+  const totalIgnoradas = jaExistentes.length + semNf;
+  return { sucesso:true, inseridas:inserts.length, atualizadas:0, ignoradas:totalIgnoradas, jaExistentes, erros:[],
+    mensagem:`Importação concluída! ${inserts.length} inseridas, ${totalIgnoradas} ignoradas.` };
 }
 async function getTransportadoras(env) {
   const rows = await sheetsRead(`${SHEET_NAME}!I2:K`, env);
