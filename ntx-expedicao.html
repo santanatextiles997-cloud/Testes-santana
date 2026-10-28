@@ -301,20 +301,37 @@ tfoot td{padding:9px 12px;font-size:12px;font-weight:700;color:var(--accent-lt);
 }
 
 .header-left{display:flex;align-items:center;gap:12px}
-.hamburger-btn{background:none;border:none;color:var(--white);cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background .15s}
+.hamburger-btn{display:none;background:none;border:none;color:var(--white);cursor:pointer;padding:6px;align-items:center;justify-content:center;border-radius:6px;transition:background .15s}
 .hamburger-btn:hover{background:rgba(255,255,255,.08)}
 #drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800}
-#drawer-overlay.open{display:block}
-#drawer{position:fixed;top:0;left:0;bottom:0;width:270px;max-width:82vw;background:var(--navy-mid);border-right:1px solid var(--border);z-index:801;transform:translateX(-100%);transition:transform .25s ease;display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,.4)}
-#drawer.open{transform:translateX(0)}
+#drawer{position:fixed;top:0;left:0;bottom:0;width:270px;max-width:82vw;background:var(--navy-mid);border-right:1px solid var(--border);z-index:801;transform:translateX(0);display:flex;flex-direction:column;box-shadow:none}
 .drawer-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .drawer-head-title{font-size:14px;font-weight:700;color:var(--white)}
-.drawer-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:4px}
+.drawer-close{display:none;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:4px}
 .drawer-nav{padding:10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
 .drawer-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:8px;background:none;border:none;color:var(--text-muted);font-size:14px;font-weight:500;cursor:pointer;text-align:left;transition:background .15s,color .15s;width:100%}
 .drawer-item:hover{background:rgba(46,134,222,.08);color:var(--white)}
 .drawer-item.active{background:rgba(46,134,222,.16);color:var(--accent-lt);font-weight:700}
 .drawer-item .di-icon{font-size:17px;width:22px;text-align:center}
+header,main{margin-left:270px;transition:margin-left .2s}
+.embarque-grid{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:auto auto;gap:18px}
+.embq-detalhamentos{grid-column:1;grid-row:1}
+.embq-embarques{grid-column:1;grid-row:2}
+.embq-transp{grid-column:2;grid-row:1/3;display:flex;flex-direction:column}
+.embq-transp-scroll{max-height:640px;overflow-y:auto;padding-right:4px}
+@media(max-width:1100px){
+  .embarque-grid{grid-template-columns:1fr}
+  .embq-detalhamentos,.embq-embarques,.embq-transp{grid-column:1;grid-row:auto}
+  .embq-transp-scroll{max-height:400px}
+}
+@media(max-width:900px){
+  header,main{margin-left:0}
+  .hamburger-btn{display:flex}
+  .drawer-close{display:block}
+  #drawer-overlay.open{display:block}
+  #drawer{transform:translateX(-100%);transition:transform .25s ease;box-shadow:4px 0 24px rgba(0,0,0,.4)}
+  #drawer.open{transform:translateX(0)}
+}
 .alert-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .alert-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:default}
 .alert-chip.crit{background:rgba(231,76,60,.14);color:var(--red);border:1px solid rgba(231,76,60,.35)}
@@ -409,102 +426,57 @@ tfoot td{padding:9px 12px;font-size:12px;font-weight:700;color:var(--accent-lt);
 <div id="drawer">
   <div class="drawer-head"><span class="drawer-head-title">☰ Menu NTX Expedição</span><button class="drawer-close" onclick="fecharDrawer()">✕</button></div>
   <div class="drawer-nav">
-    <button class="drawer-item active" data-page="inicial" onclick="switchPanel('inicial',this)"><span class="di-icon">🏠</span>Inicial</button>
-    <button class="drawer-item" data-page="dashboard" onclick="switchPanel('dashboard',this)"><span class="di-icon">📊</span>Dashboard</button>
-    <button class="drawer-item" data-page="enviar-email" onclick="switchPanel('enviar-email',this)"><span class="di-icon">📧</span>Enviar E-mail</button>
-    <button class="drawer-item" data-page="mapa" onclick="switchPanel('mapa',this)"><span class="di-icon">🗺️</span>Mapa de Cargas</button>
-    <button class="drawer-item" data-page="relatorios" onclick="switchPanel('relatorios',this)"><span class="di-icon">📄</span>Relatórios</button>
-    <button class="drawer-item" data-page="inserir" onclick="switchPanel('inserir',this)"><span class="di-icon">➕</span>Inserir Nota</button>
+    <button class="drawer-item active" data-page="embarque" onclick="switchPanel('embarque',this)"><span class="di-icon">🚚</span>Controle de Embarque</button>
+    <button class="drawer-item" data-page="visao-geral" onclick="switchPanel('visao-geral',this)"><span class="di-icon">📊</span>Visão Geral</button>
+    <button class="drawer-item" data-page="config" onclick="switchPanel('config',this)"><span class="di-icon">⚙️</span>Configurações</button>
   </div>
 </div>
 <main>
   <div id="loading"><div class="spinner"></div><span>Carregando dados da planilha...</span></div>
-  <div id="panel-inicial" class="panel">
+  <div id="panel-embarque" class="panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div><div style="font-size:17px;font-weight:700;color:var(--white)">🚚 Controle de Embarque</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px">Pendente de envio — visão consolidada</div></div>
+      <button class="btn btn-primary" onclick="carregarDados()">↺ Atualizar</button>
+    </div>
     <div class="kpi-grid-critical" style="margin-bottom:20px">
-      <div class="kpi-card-lg" style="cursor:default"><div class="kpi-label">Notas Pendentes de Envio <span>📦</span></div><div class="kpi-value" id="ini-k-pendentes">—</div><div class="kpi-sub">aguardando embarque</div></div>
-      <div class="kpi-card-lg c-warn" style="cursor:default"><div class="kpi-label">Notas Retidas <span>⚠️</span></div><div class="kpi-value" id="ini-k-retidas">—</div><div class="kpi-sub">retidas na transportadora</div></div>
+      <div class="kpi-card-lg" style="cursor:default"><div class="kpi-label">Notas Fiscais <span>📄</span></div><div class="kpi-value" id="emb-k-notas">—</div><div class="kpi-sub">pendentes de envio</div></div>
+      <div class="kpi-card-lg c-info" style="cursor:default"><div class="kpi-label">Volumes <span>📦</span></div><div class="kpi-value" id="emb-k-vol">—</div><div class="kpi-sub">pendentes de envio</div></div>
+      <div class="kpi-card-lg c-warn" style="cursor:default"><div class="kpi-label">Metros <span>📏</span></div><div class="kpi-value" id="emb-k-met">—</div><div class="kpi-sub">pendentes de envio</div></div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-      <span class="table-title">Pendências por Transportadora</span>
-      <button class="btn btn-success" onclick="abrirModalImport()">📎 Incluir Arquivo</button>
-      <button class="btn btn-primary" onclick="abrirRelatorioTransportadoras()">🖨️ Imprimir Pendências</button>
-    </div>
-    <div id="inicial-cards-container" class="email-cards-grid"></div>
-  </div>
-  <div id="panel-dashboard" class="panel">
-    <div class="alert-strip" id="alert-strip"></div>
-    <div class="filter-bar">
-      <div class="fg"><label>Nº NF</label><input type="text" id="f-nf" placeholder="Ex: 63789" oninput="applyFilters()"></div>
-      <div class="fg"><label>Cliente</label><input type="text" id="f-cliente" placeholder="Nome do cliente" oninput="applyFilters()"></div>
-      <div class="fg-date-group"><label>Data de Emissão<span class="date-active-badge" id="date-badge" style="display:none">Ativo</span></label><div class="fg-date-inputs"><input type="date" id="f-data-ini" title="Data inicial" onchange="applyFilters()"><span>até</span><input type="date" id="f-data-fim" title="Data final" onchange="applyFilters()"></div></div>
-      <div class="fg"><label>UF</label><select id="f-uf" onchange="applyFilters()"><option value="">Todos</option></select></div>
-      <div class="fg"><label>Transportadora</label><select id="f-transp" onchange="applyFilters()"><option value="">Todos</option></select></div>
-      <div class="fg"><label>Retida</label><select id="f-retida" onchange="applyFilters()"><option value="">Todos</option><option value="sim">SIM</option><option value="nao">NÃO</option></select></div>
-      <div class="fg"><label>Embarcada</label><select id="f-emb" onchange="applyFilters()"><option value="">Todos</option><option value="sim">SIM</option><option value="nao">NÃO</option></select></div>
-      <div class="fg"><label>Coleta Solicitada</label><select id="f-coleta" onchange="applyFilters()"><option value="">Todos</option><option value="sim">SIM</option><option value="nao">NÃO</option></select></div>
-      <div class="btn-grp"><button class="btn btn-secondary" onclick="limparFiltros()">Limpar</button><button class="btn btn-primary" onclick="carregarDados()">↺ Atualizar</button></div>
-    </div>
-    <div class="kpi-grid-critical">
-      <div class="kpi-card-lg" onclick="irParaPendencias()" title="Clique para ver pendências na tabela"><div class="kpi-label">Pendências <span>🚨</span></div><div class="kpi-value" id="k-pend">—</div><div class="kpi-sub">não embarcadas</div></div>
-      <div class="kpi-card-lg c-warn" style="cursor:default"><div class="kpi-label">Sem Data Agendada <span>📅</span></div><div class="kpi-value" id="k-semdata">—</div><div class="kpi-sub">aguardando definição</div></div>
-      <div class="kpi-card-lg c-info" style="cursor:default"><div class="kpi-label">Coleta Solicitada <span>📧</span></div><div class="kpi-value" id="k-coletasol">—</div><div class="kpi-sub">aguardando embarque</div></div>
-      <div class="kpi-card-lg c-ok" style="cursor:default" title="Percentual de notas já embarcadas"><div class="kpi-label">Taxa de Embarque <span>✅</span></div><div class="kpi-value" id="k-taxaemb">—</div><div class="kpi-sub" id="k-taxaemb-sub">embarcadas / total</div></div>
-    </div>
-    <div class="kpi-grid-secondary">
-      <div class="kpi-card-sm"><div class="kpi-label-sm">Total NFs</div><div class="kpi-value-sm" id="k-notas">—</div></div>
-      <div class="kpi-card-sm"><div class="kpi-label-sm">Volumes</div><div class="kpi-value-sm" id="k-vol">—</div></div>
-      <div class="kpi-card-sm"><div class="kpi-label-sm">Peso Bruto (kg)</div><div class="kpi-value-sm" id="k-peso">—</div></div>
-      <div class="kpi-card-sm"><div class="kpi-label-sm">Metragem (m)</div><div class="kpi-value-sm" id="k-met">—</div></div>
-      <div class="kpi-card-sm"><div class="kpi-label-sm">Retidas</div><div class="kpi-value-sm" id="k-ret">—</div></div>
-      <div class="kpi-card-sm"><div class="kpi-label-sm">Embarcadas</div><div class="kpi-value-sm" id="k-emb">—</div></div>
-    </div>
-    <div class="charts-grid">
-      <div class="chart-card"><div class="chart-title">📈 Evolução Semanal de Emissões</div><div class="chart-wrap"><canvas id="c1"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">📊 Status por Transportadora</div><div class="chart-wrap"><canvas id="c2"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">🎯 Distribuição de Status</div><div class="chart-wrap"><canvas id="c3"></canvas></div></div>
-      <div class="chart-card"><div class="chart-title">📦 Volumes por UF</div><div class="chart-wrap"><canvas id="c4"></canvas></div></div>
-    </div>
-    <div class="table-section">
-      <div class="table-header">
-        <div style="display:flex;align-items:center;gap:10px"><span class="table-title">Detalhamento Completo</span><span class="badge badge-blue" id="badge-count">0 registros</span></div>
-        <div class="table-actions"><input class="search-input" type="text" placeholder="🔍 Buscar na tabela..." id="srch" oninput="onSearchInput()"><button class="btn btn-success" onclick="abrirModalImport()" title="Importar relatório de planilha">📥 Importar Planilha</button><button class="btn btn-warning" onclick="switchPanel('enviar-email',document.querySelector('[data-page=&quot;enviar-email&quot;]'))" title="Gerar e-mail de coleta">📧 Gerar E-mail de Coleta</button></div>
-      </div>
-      <div class="table-wrap"><table><thead><tr><th onclick="sortTable(0)">Nº NF ↕</th><th onclick="sortTable(1)">Emissão ↕</th><th onclick="sortTable(2)">Cliente ↕</th><th onclick="sortTable(3)">UF ↕</th><th onclick="sortTable(4)" style="text-align:right">Volumes ↕</th><th onclick="sortTable(5)" style="text-align:right">Peso Bruto (kg) ↕</th><th onclick="sortTable(6)" style="text-align:right">Metragem (m) ↕</th><th onclick="sortTable(7)">Data Coleta ↕</th><th onclick="sortTable(8)">Transportadora ↕</th><th onclick="sortTable(9)" style="text-align:center">Retida ↕</th><th onclick="sortTable(10)" style="text-align:center">Embarcada? ↕</th><th onclick="sortTable(11)" style="text-align:center">Coleta Sol. ↕</th><th style="text-align:center;cursor:default">Ações</th></tr></thead><tbody id="tbody"></tbody><tfoot id="tfoot" style="display:none"><tr><td colspan="4">TOTAIS (página)</td><td style="text-align:right" id="tot-vol">—</td><td style="text-align:right" id="tot-peso">—</td><td style="text-align:right" id="tot-met">—</td><td colspan="6"></td></tr></tfoot></table></div>
-      <div class="pagination-bar" id="pagination-bar"><div class="pagination-info"><span>Página <strong id="pg-current">1</strong> de <strong id="pg-total">1</strong></span><span style="color:var(--border)">|</span><span><strong id="pg-count-filtered">0</strong> registros encontrados</span><span style="color:var(--border)">|</span><span>Exibindo <strong id="pg-showing">0</strong></span><span style="color:var(--border)">|</span><label style="display:flex;align-items:center;gap:6px;cursor:pointer">Por página:<select class="per-page-select" id="per-page" onchange="onPerPageChange()"><option value="15">15</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></label></div><div class="pagination-controls" id="pg-controls"></div></div>
-    </div>
-  </div>
-  <div id="panel-enviar-email" class="panel">
-    <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px">Notas não embarcadas, agrupadas por transportadora. Clique em um card para ver os detalhes e o texto pronto para enviar.</p>
-    <div id="email-cards-container" class="email-cards-grid"></div>
-  </div>
-  <div id="panel-mapa" class="panel">
-    <p style="font-size:11px;color:var(--text-muted);margin-bottom:14px">Respeita os filtros aplicados no Dashboard.</p>
-    <div class="mapa-wrap">
-      <div class="mapa-svg-card">
-        <div class="chart-title">Para onde estão indo as cargas</div>
-        <div id="mapa-svg-container"></div>
-        <div class="mapa-legend">
-          <div class="mapa-legend-item"><span class="mapa-legend-dot" style="background:#1abc9c"></span>Baixa pendência</div>
-          <div class="mapa-legend-item"><span class="mapa-legend-dot" style="background:#e67e22"></span>Pendência moderada</div>
-          <div class="mapa-legend-item"><span class="mapa-legend-dot" style="background:#e74c3c"></span>Alta pendência</div>
-          <div class="mapa-legend-item">Tamanho da bolha = volumes</div>
+    <div class="embarque-grid">
+      <div class="chart-card embq-detalhamentos">
+        <div class="table-header" style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px"><span class="table-title">Detalhamentos</span><span class="badge badge-blue" id="badge-count">0 registros</span></div>
+          <div class="table-actions"><input class="search-input" type="text" placeholder="🔍 Buscar na tabela..." id="srch" oninput="onSearchInput()"></div>
         </div>
+        <div class="table-wrap"><table><thead><tr><th onclick="sortTable(0)">Nº NF ↕</th><th onclick="sortTable(1)">Emissão ↕</th><th onclick="sortTable(2)">Cliente ↕</th><th onclick="sortTable(3)">UF ↕</th><th onclick="sortTable(4)" style="text-align:right">Volumes ↕</th><th onclick="sortTable(5)" style="text-align:right">Peso Bruto (kg) ↕</th><th onclick="sortTable(6)" style="text-align:right">Metragem (m) ↕</th><th onclick="sortTable(7)">Data Coleta ↕</th><th onclick="sortTable(8)">Transportadora ↕</th><th onclick="sortTable(9)" style="text-align:center">Retida ↕</th><th onclick="sortTable(10)" style="text-align:center">Embarcada? ↕</th><th onclick="sortTable(11)" style="text-align:center">Coleta Sol. ↕</th><th style="text-align:center;cursor:default">Ações</th></tr></thead><tbody id="tbody"></tbody><tfoot id="tfoot" style="display:none"><tr><td colspan="4">TOTAIS (página)</td><td style="text-align:right" id="tot-vol">—</td><td style="text-align:right" id="tot-peso">—</td><td style="text-align:right" id="tot-met">—</td><td colspan="6"></td></tr></tfoot></table></div>
+        <div class="pagination-bar" id="pagination-bar"><div class="pagination-info"><span>Página <strong id="pg-current">1</strong> de <strong id="pg-total">1</strong></span><span style="color:var(--border)">|</span><span><strong id="pg-count-filtered">0</strong> registros encontrados</span><span style="color:var(--border)">|</span><span>Exibindo <strong id="pg-showing">0</strong></span><span style="color:var(--border)">|</span><label style="display:flex;align-items:center;gap:6px;cursor:pointer">Por página:<select class="per-page-select" id="per-page" onchange="onPerPageChange()"><option value="15">15</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></label></div><div class="pagination-controls" id="pg-controls"></div></div>
       </div>
-      <div class="mapa-lista-card">
-        <div class="chart-title">Ranking por Estado</div>
-        <div id="mapa-lista"></div>
+      <div class="chart-card embq-transp">
+        <div class="chart-title">Embarques por Transportadora</div>
+        <p style="font-size:11px;color:var(--text-muted);margin:4px 0 12px">Pendente de envio, agrupado por transportadora. Clique em um card para ver as notas.</p>
+        <div id="emb-transp-container" class="email-cards-grid embq-transp-scroll"></div>
+      </div>
+      <div class="chart-card embq-embarques">
+        <div class="chart-title">Embarques</div>
+        <p style="font-size:11px;color:var(--text-muted);margin:4px 0 12px">Últimos embarques realizados, por data.</p>
+        <div class="table-wrap"><table><thead><tr><th>Nº NF</th><th>Data Coleta</th><th>Cliente</th><th>UF</th><th>Transportadora</th><th style="text-align:right">Volumes</th><th style="text-align:right">Peso Bruto (kg)</th></tr></thead><tbody id="emb-recentes-tbody"></tbody></table></div>
       </div>
     </div>
   </div>
-  <div id="panel-relatorios" class="panel">
+  <div id="panel-visao-geral" class="panel">
     <div class="chart-card" style="max-width:520px;margin:60px auto;text-align:center;padding:40px 30px">
       <div style="font-size:42px;margin-bottom:14px">🚧</div>
-      <div style="font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px">Relatórios em desenvolvimento</div>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Esta seção está sendo construída e em breve trará relatórios detalhados de expedição, transportadoras e desempenho.</div>
+      <div style="font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px">Visão Geral em desenvolvimento</div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Esta seção está sendo construída e em breve trará indicadores e gráficos gerais do painel.</div>
     </div>
   </div>
-  <div id="panel-inserir" class="panel">
-    <div style="max-width:640px;margin:0 auto"><div class="chart-card"><div class="chart-title">➕ Inserir Nova Nota Fiscal</div><div class="form-grid" style="margin-top:12px"><div class="form-group"><label>Nº NF *</label><input type="text" id="i-nf" placeholder="Ex: 64500"></div><div class="form-group"><label>Data Emissão</label><input type="date" id="i-emissao"></div><div class="form-group full"><label>Cliente *</label><input type="text" id="i-cli" placeholder="Nome do cliente"></div><div class="form-group"><label>UF *</label><select id="i-uf"><option value="">Selecione</option><option>AC</option><option>AL</option><option>AM</option><option>AP</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MG</option><option>MS</option><option>MT</option><option>PA</option><option>PB</option><option>PE</option><option>PI</option><option>PR</option><option>RJ</option><option>RN</option><option>RO</option><option>RR</option><option>RS</option><option>SC</option><option selected>SP</option><option>SE</option><option>TO</option></select></div><div class="form-group"><label>Volumes</label><input type="number" id="i-vol" placeholder="0" min="0"></div><div class="form-group"><label>Peso Bruto (kg)</label><input type="number" id="i-peso" placeholder="0,00" step="0.01" min="0"></div><div class="form-group"><label>Metragem (m)</label><input type="number" id="i-met" placeholder="0,00" step="0.01" min="0"></div><div class="form-group"><label>Data Coleta</label><input type="text" id="i-col" placeholder="dd/mm/aaaa ou A DEFINIR"></div><div class="form-group full"><label>Transportadora *</label><input type="text" id="i-transp" placeholder="Nome da transportadora" list="tl"><datalist id="tl"><option value="LEITE EXPRESS"><option value="EXCELLENCE"><option value="RIO GRANDE"><option value="GARTRAN"><option value="LUGA TRANSPORTE"></datalist></div><div class="form-group"><label>Retida? (col J)</label><select id="i-ret"><option value="nao">NÃO</option><option value="sim">SIM</option></select></div><div class="form-group"><label>Embarcada? (col K)</label><select id="i-emb2"><option value="sim">SIM</option><option value="nao">NÃO</option></select></div></div><div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end"><button class="btn btn-secondary" onclick="limparForm()">Limpar</button><button class="btn btn-primary" onclick="salvarNota()">💾 Salvar Nota</button></div></div></div>
+  <div id="panel-config" class="panel">
+    <div class="chart-card" style="max-width:520px;margin:60px auto;text-align:center;padding:40px 30px">
+      <div style="font-size:42px;margin-bottom:14px">🚧</div>
+      <div style="font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px">Configurações em desenvolvimento</div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.6">Esta seção está sendo construída e em breve trará as opções de configuração do painel.</div>
+    </div>
   </div>
 </main>
 <div id="toast"></div>
@@ -576,7 +548,7 @@ function renderMapaLista(porUF){var el=document.getElementById('mapa-lista');if(
 function irParaUF(uf){switchPanel('dashboard',document.querySelector('[data-page="dashboard"]'));setTimeout(function(){document.getElementById('f-uf').value=uf;applyFilters();document.querySelector('.table-section').scrollIntoView({behavior:'smooth',block:'start'});},60);}
 function enviarEmailPlaceholder(){showToast('Funcionalidade de envio ainda não disponível — em desenvolvimento.');}
 function abrirRelatorioTransportadoras(){var pendentes=DADOS.filter(function(n){return!n.embarcada;});document.getElementById('mpdf-count').textContent='('+fmt(pendentes.length)+' registros pendentes)';var now=new Date();var dtStr=now.toLocaleDateString('pt-BR')+' '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});var porT={};pendentes.forEach(function(n){var t=n.transportadora||'(Sem transportadora)';if(!porT[t])porT[t]=[];porT[t].push(n);});var ts=Object.keys(porT).sort(function(a,b){return porT[b].length-porT[a].length;});var seccoesHTML='';ts.forEach(function(t){var lista=porT[t];var linhas=lista.map(function(n){return'<tr><td>'+esc(n.nf)+'</td><td>'+(n.emissao||'')+'</td><td>'+esc(n.cliente)+'</td><td class="c">'+esc(n.uf)+'</td><td class="r">'+fmt(n.volumes)+'</td><td class="r">'+fmtD(n.pesoBruto)+'</td><td class="r">'+fmtD(n.metragem)+'</td></tr>';}).join('');seccoesHTML+='<div style="margin-top:22px;margin-bottom:6px;padding:9px 14px;background:#1a5276;color:#fff;border-radius:6px;font-weight:700;font-size:13px">'+esc(t)+'</div><table class="print-table"><thead><tr><th>Nota</th><th>Emissão</th><th>Cliente</th><th class="c">UF</th><th class="r">Volumes</th><th class="r">Peso Bruto (kg)</th><th class="r">Metros</th></tr></thead><tbody>'+linhas+'</tbody></table>';});var html='<div class="print-wrap" id="print-content"><div class="print-header"><div class="print-logo">SANTANA TEXTILES<span> — NTX Expedição</span></div><div class="print-meta"><strong>Pendências por Transportadora</strong><br>Gerado em: '+dtStr+'<br>Total de registros: <strong>'+fmt(pendentes.length)+'</strong></div></div>'+seccoesHTML+'<div class="print-footer">NTX Expedição — Relatório gerado em '+dtStr+'</div></div>';document.getElementById('mpdf-preview').innerHTML=html;document.getElementById('modal-pdf').classList.add('open');}
-function renderInicial(){var pendentes=DADOS.filter(function(n){return!n.embarcada;});var retidas=DADOS.filter(function(n){return n.retida;});var kEl=document.getElementById('ini-k-pendentes');if(kEl)kEl.textContent=fmt(pendentes.length);var kEl2=document.getElementById('ini-k-retidas');if(kEl2)kEl2.textContent=fmt(retidas.length);var container=document.getElementById('inicial-cards-container');if(!container)return;var porT={};pendentes.forEach(function(n){if(!n.transportadora)return;if(!porT[n.transportadora])porT[n.transportadora]={notas:0,volumes:0,peso:0,metragem:0,retidas:0};porT[n.transportadora].notas++;porT[n.transportadora].volumes+=n.volumes||0;porT[n.transportadora].peso+=n.pesoBruto||0;porT[n.transportadora].metragem+=n.metragem||0;if(n.retida)porT[n.transportadora].retidas++;});var ts=Object.keys(porT).sort(function(a,b){return porT[b].notas-porT[a].notas;});if(!ts.length){container.innerHTML='<div class="email-cards-empty">✅ Nenhuma nota pendente de envio no momento.</div>';return;}var html='';ts.forEach(function(t){var d=porT[t];html+='<div class="email-card'+(d.retidas>0?' tem-retida':'')+'" onclick="abrirModalTranspDetalhe(\''+t.replace(/'/g,"\\'")+'\')"><div class="email-card-nome">'+esc(t)+(d.retidas>0?'<span class="email-card-badge">'+d.retidas+' retida'+(d.retidas>1?'s':'')+'</span>':'')+'</div><div class="email-card-stats"><div><strong>'+fmt(d.volumes)+'</strong>volumes</div><div><strong>'+fmtD(d.peso)+'</strong>kg</div><div><strong>'+fmtD(d.metragem)+'</strong>m</div></div></div>';});container.innerHTML=html;}
+function renderEmbarqueTransp(){var pendentes=DADOS.filter(function(n){return!n.embarcada;});var container=document.getElementById('emb-transp-container');if(!container)return;var porT={};pendentes.forEach(function(n){if(!n.transportadora)return;if(!porT[n.transportadora])porT[n.transportadora]={notas:0,volumes:0,peso:0,metragem:0,retidas:0};porT[n.transportadora].notas++;porT[n.transportadora].volumes+=n.volumes||0;porT[n.transportadora].peso+=n.pesoBruto||0;porT[n.transportadora].metragem+=n.metragem||0;if(n.retida)porT[n.transportadora].retidas++;});var ts=Object.keys(porT).sort(function(a,b){return porT[b].notas-porT[a].notas;});if(!ts.length){container.innerHTML='<div class="email-cards-empty">✅ Nenhuma nota pendente de envio no momento.</div>';return;}var html='';ts.forEach(function(t){var d=porT[t];html+='<div class="email-card'+(d.retidas>0?' tem-retida':'')+'" onclick="abrirModalTranspDetalhe(\''+t.replace(/'/g,"\\'")+'\')"><div class="email-card-nome">'+esc(t)+(d.retidas>0?'<span class="email-card-badge">'+d.retidas+' retida'+(d.retidas>1?'s':'')+'</span>':'')+'</div><div class="email-card-stats"><div><strong>'+fmt(d.volumes)+'</strong>volumes</div><div><strong>'+fmtD(d.peso)+'</strong>kg</div><div><strong>'+fmtD(d.metragem)+'</strong>m</div></div></div>';});container.innerHTML=html;}
 function abrirModalTranspDetalhe(transp){var lista=DADOS.filter(function(n){return!n.embarcada&&n.transportadora===transp;});document.getElementById('mtd-transp-label').textContent='— '+transp+' ('+fmt(lista.length)+' notas)';var tb=document.getElementById('mtd-tbody');tb.innerHTML='';lista.forEach(function(n){var tr=document.createElement('tr');tr.innerHTML='<td><span class="nf-badge">'+esc(n.nf)+'</span></td><td>'+(n.emissao||'—')+'</td><td>'+esc(n.cliente)+'</td><td>'+esc(n.uf)+'</td><td style="text-align:right">'+fmt(n.volumes)+'</td><td style="text-align:right">'+fmtD(n.pesoBruto)+'</td><td style="text-align:right">'+fmtD(n.metragem)+'</td><td style="text-align:center"><span class="tag '+(n.retida?'tag-retida':'tag-nao')+'">'+(n.retida?'SIM':'NÃO')+'</span></td>';tb.appendChild(tr);});document.getElementById('modal-transp-detalhe').classList.add('open');}
 function fecharModalTranspDetalhe(){document.getElementById('modal-transp-detalhe').classList.remove('open');}
 function saudacaoAtual(){var h=new Date().getHours();if(h<12)return'Bom dia';if(h<18)return'Boa tarde';return'Boa noite';}
@@ -588,18 +560,20 @@ function toggleTheme(){var atual=document.documentElement.getAttribute('data-the
 window.addEventListener('load',function(){document.getElementById('tt-light').classList.toggle('active',document.documentElement.getAttribute('data-theme')==='light');document.getElementById('tt-dark').classList.toggle('active',document.documentElement.getAttribute('data-theme')!=='light');carregarDados();});
 function capturarEstadoFiltros(){var ids=['f-nf','f-cliente','f-uf','f-transp','f-retida','f-emb','f-coleta','f-data-ini','f-data-fim'];var estado={};ids.forEach(function(id){var el=document.getElementById(id);estado[id]=el?el.value:'';});return estado;}
 function restaurarEstadoFiltros(estado){if(!estado)return;Object.keys(estado).forEach(function(id){var el=document.getElementById(id);if(!el||estado[id]==='')return;if(el.tagName==='SELECT'){var existe=Array.prototype.some.call(el.options,function(o){return o.value===estado[id];});if(existe)el.value=estado[id];}else{el.value=estado[id];}});}
-function carregarDados(){ULTIMO_ESTADO_FILTROS=capturarEstadoFiltros();document.getElementById('loading').style.display='flex';document.getElementById('panel-dashboard').style.display='none';
+function carregarDados(){document.getElementById('loading').style.display='flex';document.getElementById('panel-embarque').style.display='none';
   apiCall('GET', '/dados')
     .then(function(res){ inicializar(res.notas||[], res.atualizado||''); })
     .catch(function(err){ console.error(err); inicializar(FALLBACK, 'Dados locais (fallback)'); });
 }
-function inicializar(notas,ts){DADOS=notas;DADOS.sort(function(a,b){return parseDateBR(b.emissao)-parseDateBR(a.emissao);});FILT=DADOS.slice();document.getElementById('ts').textContent=ts?'Atualizado: '+ts:'';document.getElementById('loading').style.display='none';popularFiltros();restaurarEstadoFiltros(ULTIMO_ESTADO_FILTROS);applyFilters();document.getElementById('panel-inicial').style.display='block';}
+function inicializar(notas,ts){DADOS=notas;DADOS.sort(function(a,b){return parseDateBR(b.emissao)-parseDateBR(a.emissao);});FILT=DADOS.slice();document.getElementById('ts').textContent=ts?'Atualizado: '+ts:'';document.getElementById('loading').style.display='none';renderAll(DADOS);document.getElementById('panel-embarque').style.display='block';}
 function parseDateBR(str){if(!str)return new Date(0);var p=String(str).split('/');if(p.length===3){return new Date(Number(p[2]),Number(p[1])-1,Number(p[0]));}var d=new Date(str);return isNaN(d)?new Date(0):d;}
 function dateBRtoISO(str){if(!str)return'';var p=String(str).split('/');if(p.length===3)return p[2]+'-'+p[1].padStart(2,'0')+'-'+p[0].padStart(2,'0');return str;}
 function popularFiltros(){var ufs=[...new Set(DADOS.map(function(n){return n.uf;}))].filter(Boolean).sort();var trs=[...new Set(DADOS.map(function(n){return n.transportadora;}))].filter(Boolean).sort();var su=document.getElementById('f-uf'),st=document.getElementById('f-transp');while(su.options.length>1)su.remove(1);while(st.options.length>1)st.remove(1);ufs.forEach(function(v){su.innerHTML+='<option value="'+v+'">'+v+'</option>';});trs.forEach(function(v){st.innerHTML+='<option value="'+v+'">'+v+'</option>';});}
 function applyFilters(){var fNF=document.getElementById('f-nf').value.trim().toLowerCase();var fCli=document.getElementById('f-cliente').value.trim().toLowerCase();var fUF=document.getElementById('f-uf').value;var fTr=document.getElementById('f-transp').value;var fRet=document.getElementById('f-retida').value;var fEmb=document.getElementById('f-emb').value;var fCol=document.getElementById('f-coleta')?document.getElementById('f-coleta').value:'';var fDatIni=document.getElementById('f-data-ini').value;var fDatFim=document.getElementById('f-data-fim').value;var dateActive=fDatIni||fDatFim;document.getElementById('date-badge').style.display=dateActive?'inline-block':'none';FILT=DADOS.filter(function(n){if(fNF&&!String(n.nf).toLowerCase().includes(fNF))return false;if(fCli&&!n.cliente.toLowerCase().includes(fCli))return false;if(fUF&&n.uf!==fUF)return false;if(fTr&&n.transportadora!==fTr)return false;if(fRet==='sim'&&!n.retida)return false;if(fRet==='nao'&&n.retida)return false;if(fEmb==='sim'&&!n.embarcada)return false;if(fEmb==='nao'&&n.embarcada)return false;if(fCol==='sim'&&!n.coletaSolicitada)return false;if(fCol==='nao'&&n.coletaSolicitada)return false;if(fDatIni||fDatFim){var emISO=dateBRtoISO(n.emissao);if(fDatIni&&emISO<fDatIni)return false;if(fDatFim&&emISO>fDatFim)return false;}return true;});pgAtual=1;renderAll(FILT);}
 function limparFiltros(){['f-nf','f-cliente','f-data-ini','f-data-fim'].forEach(function(id){document.getElementById(id).value='';});['f-uf','f-transp','f-retida','f-emb','f-coleta'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('date-badge').style.display='none';ULTIMO_ESTADO_FILTROS=null;FILT=DADOS.slice();pgAtual=1;renderAll(FILT);}
-function renderAll(notas){var r=calcResumo(notas);renderKPIs(r);renderCharts(r);renderMapa(FILT);renderEnviarEmailCards();renderInicial();TABVIEW=FILT.slice();renderTablePaginada(pgSearch);}
+function renderAll(notas){renderEmbarqueKPIs();renderEmbarqueTransp();renderEmbarquesRecentes();TABVIEW=DADOS.slice();renderTablePaginada(pgSearch);}
+function renderEmbarqueKPIs(){var pendentes=DADOS.filter(function(n){return!n.embarcada;});var r=calcResumo(pendentes);document.getElementById('emb-k-notas').textContent=fmt(r.totalNotas);document.getElementById('emb-k-vol').textContent=fmt(r.totalVolumes);document.getElementById('emb-k-met').textContent=fmtD(r.totalMetragem);}
+function renderEmbarquesRecentes(){var tb=document.getElementById('emb-recentes-tbody');if(!tb)return;var embarcadas=DADOS.filter(function(n){return n.embarcada;});embarcadas.sort(function(a,b){return parseDateBR(b.dataColeta)-parseDateBR(a.dataColeta);});var lista=embarcadas.slice(0,30);if(!lista.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px">Nenhum embarque registrado.</td></tr>';return;}tb.innerHTML='';lista.forEach(function(n){var tr=document.createElement('tr');tr.innerHTML='<td><span class="nf-badge">'+esc(n.nf)+'</span></td><td>'+(n.dataColeta||'—')+'</td><td>'+esc(n.cliente)+'</td><td>'+esc(n.uf)+'</td><td>'+esc(n.transportadora)+'</td><td style="text-align:right">'+fmt(n.volumes)+'</td><td style="text-align:right">'+fmtD(n.pesoBruto)+'</td>';tb.appendChild(tr);});}
 function calcResumo(notas){var r={totalNotas:notas.length,totalVolumes:0,totalPeso:0,totalMetragem:0,totalRetidas:0,totalEmbarcadas:0,totalPendencias:0,totalColetaSolicitada:0,totalSemData:0,taxaEmbarque:0,porTransportadora:{},porUF:{}};notas.forEach(function(n){r.totalVolumes+=n.volumes||0;r.totalPeso+=n.pesoBruto||0;r.totalMetragem+=n.metragem||0;if(n.retida)r.totalRetidas++;if(n.embarcada)r.totalEmbarcadas++;if(!n.embarcada)r.totalPendencias++;if(n.coletaSolicitada&&!n.embarcada)r.totalColetaSolicitada++;if(!n.dataColeta||String(n.dataColeta).toUpperCase()==='A DEFINIR')r.totalSemData++;if(n.transportadora){if(!r.porTransportadora[n.transportadora])r.porTransportadora[n.transportadora]={volumes:0,peso:0,metragem:0,notas:0};r.porTransportadora[n.transportadora].volumes+=n.volumes||0;r.porTransportadora[n.transportadora].peso+=n.pesoBruto||0;r.porTransportadora[n.transportadora].metragem+=n.metragem||0;r.porTransportadora[n.transportadora].notas++;}if(n.uf){if(!r.porUF[n.uf])r.porUF[n.uf]={volumes:0,notas:0};r.porUF[n.uf].volumes+=n.volumes||0;r.porUF[n.uf].notas++;}});r.taxaEmbarque=r.totalNotas?Math.round(r.totalEmbarcadas/r.totalNotas*100):0;return r;}
 function renderKPIs(r){document.getElementById('k-notas').textContent=fmt(r.totalNotas);document.getElementById('k-vol').textContent=fmt(r.totalVolumes);document.getElementById('k-peso').textContent=fmtD(r.totalPeso);document.getElementById('k-met').textContent=fmtD(r.totalMetragem);document.getElementById('k-ret').textContent=fmt(r.totalRetidas);document.getElementById('k-emb').textContent=fmt(r.totalEmbarcadas);document.getElementById('k-pend').textContent=fmt(r.totalPendencias);document.getElementById('k-semdata').textContent=fmt(r.totalSemData);document.getElementById('k-coletasol').textContent=fmt(r.totalColetaSolicitada);document.getElementById('k-taxaemb').textContent=r.taxaEmbarque+'%';document.getElementById('k-taxaemb-sub').textContent=fmt(r.totalEmbarcadas)+' de '+fmt(r.totalNotas)+' NFs';renderAlerts(r);}
 function irParaPendencias(){document.getElementById('f-emb').value='nao';applyFilters();document.querySelector('.table-section').scrollIntoView({behavior:'smooth',block:'start'});}
@@ -613,7 +587,7 @@ function goToPage(p){pgAtual=p;renderTablePaginada(pgSearch);document.querySelec
 function onPerPageChange(){pgSize=Number(document.getElementById('per-page').value)||25;pgAtual=1;renderTablePaginada(pgSearch);}
 var SORT_KEYS=['nf','emissao','cliente','uf','volumes','pesoBruto','metragem','dataColeta','transportadora','retida','embarcada','coletaSolicitada'];
 function sortTable(col){if(sCol===col){sAsc=!sAsc;}else{sCol=col;sAsc=true;}if(col===1){TABVIEW.sort(function(a,b){var da=parseDateBR(a.emissao),db=parseDateBR(b.emissao);return sAsc?da-db:db-da;});FILT.sort(function(a,b){var da=parseDateBR(a.emissao),db=parseDateBR(b.emissao);return sAsc?da-db:db-da;});}else{TABVIEW.sort(function(a,b){var va=a[SORT_KEYS[col]],vb=b[SORT_KEYS[col]];if(typeof va==='boolean'){va=va?1:0;vb=vb?1:0;}if(typeof va==='number')return sAsc?va-vb:vb-va;va=String(va||'').toLowerCase();vb=String(vb||'').toLowerCase();return sAsc?va.localeCompare(vb,'pt-BR'):vb.localeCompare(va,'pt-BR');});}pgAtual=1;renderTablePaginada(pgSearch);}
-function switchPanel(name,el){document.querySelectorAll('.drawer-item').forEach(function(b){b.classList.remove('active');});var target=el||document.querySelector('[data-page="'+name+'"]');if(target)target.classList.add('active');document.querySelectorAll('.panel').forEach(function(p){p.style.display='none';});document.getElementById('panel-'+name).style.display='block';fecharDrawer();if(name==='mapa')renderMapa(FILT);if(name==='enviar-email')renderEnviarEmailCards();if(name==='inicial')renderInicial();}
+function switchPanel(name,el){document.querySelectorAll('.drawer-item').forEach(function(b){b.classList.remove('active');});var target=el||document.querySelector('[data-page="'+name+'"]');if(target)target.classList.add('active');document.querySelectorAll('.panel').forEach(function(p){p.style.display='none';});document.getElementById('panel-'+name).style.display='block';fecharDrawer();if(name==='embarque'){renderEmbarqueKPIs();renderEmbarqueTransp();renderEmbarquesRecentes();}}
 function salvarNota(){var nf=document.getElementById('i-nf').value.trim();var cli=document.getElementById('i-cli').value.trim();var uf=document.getElementById('i-uf').value;var tr=document.getElementById('i-transp').value.trim();if(!nf||!cli||!uf||!tr){showToast('Preencha os campos obrigatórios (*).', true);return;}var er=document.getElementById('i-emissao').value;var ef=er?(function(){var p=er.split('-');return p[2]+'/'+p[1]+'/'+p[0];})():'';var colVal=document.getElementById('i-col').value.trim();if(!colVal)colVal='A DEFINIR';var d={nf:nf,emissao:ef,cliente:cli,uf:uf,volumes:Number(document.getElementById('i-vol').value)||0,pesoBruto:Number(document.getElementById('i-peso').value)||0,metragem:Number(document.getElementById('i-met').value)||0,dataColeta:colVal,transportadora:tr,retida:document.getElementById('i-ret').value==='sim',embarcada:document.getElementById('i-emb2').value==='sim'};showToast('Salvando...');
   apiCall('POST', '/inserir', { data: d })
     .then(function(res){ showToast(res.mensagem, !res.sucesso); if(res.sucesso){ limparForm(); carregarDados(); } })
