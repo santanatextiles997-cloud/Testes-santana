@@ -87,6 +87,11 @@ svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .tcard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .tcard-stats div{font-size:11px;color:var(--text-3);font-weight:500}
 .tcard-stats b{display:block;font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:1px}
+.tcard.sel{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 6px 0 12px;border-radius:14px;background:var(--ink);color:#fff;font-size:12px;font-weight:600;margin-left:10px;vertical-align:middle}
+.chip button{width:20px;height:20px;border-radius:10px;background:rgba(255,255,255,.2);color:#fff;font-size:11px;line-height:1}
+.chart-wrap{overflow-x:auto;margin-top:12px}.chart-wrap svg{display:block;width:100%;min-width:560px;height:auto}
+.sub-t{font-size:13px;font-weight:600;margin:18px 0 0;color:var(--text-2)}
 .badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:7px;font-size:11.5px;font-weight:600;white-space:nowrap}
 .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
 .b-ok{background:var(--ok-soft);color:var(--ok)}.b-warn{background:var(--warn-soft);color:var(--warn)}.b-danger{background:var(--danger-soft);color:var(--danger)}.b-muted{background:var(--line-2);color:var(--text-2)}
@@ -192,15 +197,17 @@ svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke
       <div class="card kpi k1"><div class="card-t">Notas Fiscais</div><div class="v" id="k-notas">—</div><div class="s">pendentes de envio</div></div>
       <div class="card kpi k2"><div class="card-t">Volumes</div><div class="v" id="k-vol">—</div><div class="s">pendentes de envio</div></div>
       <div class="card kpi k3"><div class="card-t">Metros</div><div class="v" id="k-met">—</div><div class="s">pendentes de envio</div></div>
-      <div class="card c-transp"><div class="card-t">Embarques por Transportadora</div><div class="card-s">Pendente de envio. Clique para ver as notas.</div><div class="transp-list" id="transp-list"></div></div>
+      <div class="card c-transp"><div class="card-t">Embarques por Transportadora</div><div class="card-s">Pendente de envio. Clique para filtrar o Detalhamentos.</div><div class="transp-list" id="transp-list"></div></div>
       <div class="card c-det">
-        <div class="tbl-head"><div><div class="card-t">Detalhamentos <span class="badge b-muted" id="det-count" style="vertical-align:middle;margin-left:6px">0</span></div></div><input class="search" type="text" id="srch" placeholder="Buscar na tabela..." oninput="onSearch()"></div>
+        <div class="tbl-head"><div><div class="card-t">Detalhamentos <span class="badge b-muted" id="det-count" style="vertical-align:middle;margin-left:6px">0</span><span id="det-chip"></span></div></div><input class="search" type="text" id="srch" placeholder="Buscar na tabela..." oninput="onSearch()"></div>
         <div class="tbl-wrap"><table class="tbl"><thead><tr>
           <th class="sort" onclick="sortTable(0)">Nº NF ↕</th><th class="sort" onclick="sortTable(1)">Emissão ↕</th><th class="sort" onclick="sortTable(2)">Cliente ↕</th><th class="sort" onclick="sortTable(3)">UF ↕</th><th class="sort num" onclick="sortTable(4)">Volumes ↕</th><th class="sort num" onclick="sortTable(5)">Peso Bruto (kg) ↕</th><th class="sort num" onclick="sortTable(6)">Metragem (m) ↕</th><th class="sort" onclick="sortTable(7)">Data Coleta ↕</th><th class="sort" onclick="sortTable(8)">Transportadora ↕</th><th class="sort ctr" onclick="sortTable(9)">Retida ↕</th><th class="sort ctr" onclick="sortTable(10)">Embarcada ↕</th><th class="sort ctr" onclick="sortTable(11)">Coleta Sol. ↕</th><th class="ctr">Ações</th>
         </tr></thead><tbody id="tbody"></tbody><tfoot id="tfoot"></tfoot></table></div>
         <div class="pager"><div><span id="pg-info"></span><label style="margin-left:12px">Por página:<select id="per-page" onchange="onPerPage()"><option>10</option><option>25</option><option>50</option><option>100</option></select></label></div><div class="pg" id="pg"></div></div>
       </div>
-      <div class="card c-emb"><div class="card-t">Embarques</div><div class="card-s">Últimos embarques realizados, por data.</div>
+      <div class="card c-emb"><div class="card-t">Embarques</div><div class="card-s">Volumes embarcados por data de coleta.</div>
+        <div class="chart-wrap" id="emb-chart"></div>
+        <div class="sub-t">Últimos embarques realizados</div>
         <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nº NF</th><th>Data Coleta</th><th>Cliente</th><th>UF</th><th>Transportadora</th><th class="num">Volumes</th><th class="num">Peso Bruto (kg)</th><th class="num">Metragem (m)</th></tr></thead><tbody id="emb-tbody"></tbody></table></div>
       </div>
     </div>
@@ -209,11 +216,6 @@ svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke
   <section class="view" id="view-visao"><div class="card ph"><div class="e">🚧</div><b>Visão Geral em desenvolvimento</b><p>Esta seção está sendo construída e em breve trará indicadores e gráficos gerais do painel.</p></div></section>
   <section class="view" id="view-config"><div class="card ph"><div class="e">🚧</div><b>Configurações em desenvolvimento</b><p>Esta seção está sendo construída e em breve trará as opções de configuração do painel.</p></div></section>
 </div>
-
-<div class="modal" id="modal-transp" onclick="if(event.target===this)fecharModal('modal-transp')"><div class="mbox">
-  <div class="mhead"><h3>Notas pendentes<small id="mt-label"></small></h3><button class="icon-btn" onclick="fecharModal('modal-transp')" aria-label="Fechar"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="mbody"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nº NF</th><th>Emissão</th><th>Cliente</th><th>UF</th><th class="num">Volumes</th><th class="num">Peso (kg)</th><th class="num">Metragem (m)</th><th class="ctr">Retida</th></tr></thead><tbody id="mt-tbody"></tbody></table></div></div>
-</div></div>
 
 <div class="modal" id="modal-edit" onclick="if(event.target===this)fecharModal('modal-edit')"><div class="mbox sm">
   <div class="mhead"><h3>Editar nota fiscal<small id="me-label"></small></h3><button class="icon-btn" onclick="fecharModal('modal-edit')" aria-label="Fechar"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -238,7 +240,7 @@ svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke
 
 <script>
 var API_BASE='/api';
-var DADOS=[],FILT=[],TABVIEW=[],sCol=1,sAsc=false,pgAtual=1,pgSize=10,pgSearch='',nfEmEdicao=null,TRANSP_ATUAL=[];
+var DADOS=[],FILT=[],TABVIEW=[],sCol=1,sAsc=false,pgAtual=1,pgSize=10,pgSearch='',nfEmEdicao=null,TRANSP_ATUAL=[],TRANSP_SEL='';
 var FALLBACK=[
   {nf:'63789',emissao:'08/04/2026',cliente:'BIMBU INDUSTRIA',uf:'SP',volumes:28,pesoBruto:1789.5,metragem:3057.3,dataColeta:'09/04/2026',transportadora:'LEITE EXPRESS',retida:false,embarcada:true},
   {nf:'63901',emissao:'14/04/2026',cliente:'LEEMA JEANS',uf:'SP',volumes:49,pesoBruto:3051.35,metragem:5163.6,dataColeta:'15/04/2026',transportadora:'LEITE EXPRESS',retida:false,embarcada:true},
@@ -281,12 +283,17 @@ function applyFilters(){var nf=document.getElementById('f-nf').value.trim().toLo
 function limparFiltros(){['f-nf','f-cli','f-transp','f-uf','f-ret','f-ini','f-fim'].forEach(function(id){document.getElementById(id).value='';});applyFilters();}
 
 /* render */
-function renderAll(){renderKPIs();renderTransp();renderEmbarques();TABVIEW=FILT.slice();aplicarOrdem();renderTabela();}
+function baseTabela(){return TRANSP_SEL?FILT.filter(function(n){return(n.transportadora||'(Sem transportadora)')===TRANSP_SEL;}):FILT.slice();}
+function renderAll(){renderKPIs();renderTransp();renderEmbarques();TABVIEW=baseTabela();aplicarOrdem();renderTabela();}
 function renderKPIs(){var p=FILT.filter(function(n){return!n.embarcada;});var v=0,m=0;p.forEach(function(n){v+=n.volumes||0;m+=n.metragem||0;});document.getElementById('k-notas').textContent=fmt(p.length);document.getElementById('k-vol').textContent=fmt(v);document.getElementById('k-met').textContent=fmtD(m);}
-function renderTransp(){var p=FILT.filter(function(n){return!n.embarcada;});var por={};p.forEach(function(n){var t=n.transportadora||'(Sem transportadora)';if(!por[t])por[t]={notas:0,vol:0,peso:0,ret:0};por[t].notas++;por[t].vol+=n.volumes||0;por[t].peso+=n.pesoBruto||0;if(n.retida)por[t].ret++;});TRANSP_ATUAL=Object.keys(por).sort(function(a,b){return por[b].notas-por[a].notas;});var el=document.getElementById('transp-list');if(!TRANSP_ATUAL.length){el.innerHTML='<div class="empty">Nenhuma nota pendente de envio.</div>';return;}el.innerHTML=TRANSP_ATUAL.map(function(t,i){var d=por[t];return'<button class="tcard" onclick="abrirTransp('+i+')"><div class="tcard-h"><span>'+esc(t)+'</span>'+(d.ret?'<span class="badge b-danger">'+d.ret+' retida'+(d.ret>1?'s':'')+'</span>':'')+'</div><div class="tcard-stats"><div><b>'+fmt(d.notas)+'</b>notas</div><div><b>'+fmt(d.vol)+'</b>volumes</div><div><b>'+fmtD(d.peso)+'</b>peso (kg)</div></div></button>';}).join('');}
-function abrirTransp(i){var t=TRANSP_ATUAL[i];var l=FILT.filter(function(n){return!n.embarcada&&(n.transportadora||'(Sem transportadora)')===t;});document.getElementById('mt-label').textContent='— '+t+' ('+fmt(l.length)+' notas)';document.getElementById('mt-tbody').innerHTML=l.map(function(n){return'<tr><td class="nf">'+esc(n.nf)+'</td><td>'+esc(n.emissao||'—')+'</td><td>'+esc(n.cliente)+'</td><td>'+esc(n.uf)+'</td><td class="num">'+fmt(n.volumes)+'</td><td class="num">'+fmtD(n.pesoBruto)+'</td><td class="num">'+fmtD(n.metragem)+'</td><td class="ctr">'+badge(n.retida,'danger','Sim','Não')+'</td></tr>';}).join('');document.getElementById('modal-transp').classList.add('open');}
+function renderTransp(){var p=FILT.filter(function(n){return!n.embarcada;});var por={};p.forEach(function(n){var t=n.transportadora||'(Sem transportadora)';if(!por[t])por[t]={notas:0,vol:0,peso:0,ret:0};por[t].notas++;por[t].vol+=n.volumes||0;por[t].peso+=n.pesoBruto||0;if(n.retida)por[t].ret++;});TRANSP_ATUAL=Object.keys(por).sort(function(a,b){return por[b].notas-por[a].notas;});if(TRANSP_SEL&&TRANSP_ATUAL.indexOf(TRANSP_SEL)<0)TRANSP_SEL='';atualizarChip();var el=document.getElementById('transp-list');if(!TRANSP_ATUAL.length){el.innerHTML='<div class="empty">Nenhuma nota pendente de envio.</div>';return;}el.innerHTML=TRANSP_ATUAL.map(function(t,i){var d=por[t];return'<button class="tcard'+(t===TRANSP_SEL?' sel':'')+'" aria-pressed="'+(t===TRANSP_SEL)+'" onclick="selTransp('+i+')"><div class="tcard-h"><span>'+esc(t)+'</span>'+(d.ret?'<span class="badge b-danger">'+d.ret+' retida'+(d.ret>1?'s':'')+'</span>':'')+'</div><div class="tcard-stats"><div><b>'+fmt(d.notas)+'</b>notas</div><div><b>'+fmt(d.vol)+'</b>volumes</div><div><b>'+fmtD(d.peso)+'</b>peso (kg)</div></div></button>';}).join('');}
+function atualizarChip(){var c=document.getElementById('det-chip');c.innerHTML=TRANSP_SEL?'<span class="chip">'+esc(TRANSP_SEL)+'<button onclick="limparTransp()" aria-label="Remover filtro de transportadora" title="Remover filtro">✕</button></span>':'';}
+function refreshDet(){renderTransp();TABVIEW=baseTabela();aplicarOrdem();pgAtual=1;renderTabela();}
+function selTransp(i){var t=TRANSP_ATUAL[i];TRANSP_SEL=(TRANSP_SEL===t)?'':t;refreshDet();if(TRANSP_SEL&&window.innerWidth<=1280)document.querySelector('.c-det').scrollIntoView({behavior:'smooth',block:'start'});}
+function limparTransp(){TRANSP_SEL='';refreshDet();}
 function badge(v,cor,sim,nao){return v?'<span class="badge b-'+cor+'">'+sim+'</span>':'<span class="badge b-muted">'+nao+'</span>';}
-function renderEmbarques(){var l=FILT.filter(function(n){return n.embarcada;}).sort(function(a,b){return parseDateBR(b.dataColeta)-parseDateBR(a.dataColeta);}).slice(0,30);var tb=document.getElementById('emb-tbody');if(!l.length){tb.innerHTML='<tr><td colspan="8" class="empty">Nenhum embarque registrado.</td></tr>';return;}tb.innerHTML=l.map(function(n){return'<tr><td class="nf">'+esc(n.nf)+'</td><td>'+esc(n.dataColeta||'—')+'</td><td class="cli" title="'+esc(n.cliente)+'">'+esc(n.cliente)+'</td><td>'+esc(n.uf)+'</td><td>'+esc(n.transportadora)+'</td><td class="num">'+fmt(n.volumes)+'</td><td class="num">'+fmtD(n.pesoBruto)+'</td><td class="num">'+fmtD(n.metragem)+'</td></tr>';}).join('');}
+function renderChart(){var el=document.getElementById('emb-chart');var por={};FILT.forEach(function(n){if(!n.embarcada)return;var d=parseDateBR(n.dataColeta);if(d.getFullYear()<2000)return;var k=d.getTime();por[k]=(por[k]||0)+(n.volumes||0);});var ks=Object.keys(por).map(Number).sort(function(a,b){return a-b;}).slice(-14);if(!ks.length){el.innerHTML='<div class="empty">Sem embarques com data para exibir no gráfico.</div>';return;}var vals=ks.map(function(k){return por[k];});var max=Math.max.apply(null,vals);var rough=(max||1)/4,mag=Math.pow(10,Math.floor(Math.log10(rough))),nm=rough/mag;var step=(nm<=1?1:nm<=2?2:nm<=5?5:10)*mag;var top=Math.max(step,step*Math.ceil(max/step));var W=1000,H=250,L=48,R=12,T=24,B=34,iw=W-L-R,ih=H-T-B,bw=iw/ks.length,barw=Math.min(56,bw*0.6);var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Volumes embarcados por data">';for(var g=0;g<=top/step+0.001;g++){var y=T+ih-(g*step/top)*ih;s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="#e4e4ea"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#8a8998">'+fmt(g*step)+'</text>';}ks.forEach(function(k,i){var v=vals[i],h=v/top*ih,x=L+i*bw+(bw-barw)/2,y=T+ih-h,d=new Date(k),dm=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');s+='<rect x="'+x+'" y="'+y+'" width="'+barw+'" height="'+Math.max(h,1)+'" rx="5" fill="#050017"><title>'+dm+'/'+d.getFullYear()+': '+fmt(v)+' volumes</title></rect><text x="'+(x+barw/2)+'" y="'+(y-6)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#050017">'+fmt(v)+'</text><text x="'+(x+barw/2)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" fill="#4b4a5c">'+dm+'</text>';});el.innerHTML=s+'</svg>';}
+function renderEmbarques(){renderChart();var l=FILT.filter(function(n){return n.embarcada;}).sort(function(a,b){return parseDateBR(b.dataColeta)-parseDateBR(a.dataColeta);}).slice(0,30);var tb=document.getElementById('emb-tbody');if(!l.length){tb.innerHTML='<tr><td colspan="8" class="empty">Nenhum embarque registrado.</td></tr>';return;}tb.innerHTML=l.map(function(n){return'<tr><td class="nf">'+esc(n.nf)+'</td><td>'+esc(n.dataColeta||'—')+'</td><td class="cli" title="'+esc(n.cliente)+'">'+esc(n.cliente)+'</td><td>'+esc(n.uf)+'</td><td>'+esc(n.transportadora)+'</td><td class="num">'+fmt(n.volumes)+'</td><td class="num">'+fmtD(n.pesoBruto)+'</td><td class="num">'+fmtD(n.metragem)+'</td></tr>';}).join('');}
 
 /* tabela detalhamentos */
 function onSearch(){pgSearch=document.getElementById('srch').value.trim().toLowerCase();pgAtual=1;renderTabela();}
@@ -302,7 +309,7 @@ function salvarEdicao(){if(!nfEmEdicao){showToast('Nenhuma nota selecionada.',tr
 
 (function(){var s=document.getElementById('e-uf');s.innerHTML='<option value="">Selecione</option>'+UFS.map(function(u){return'<option>'+u+'</option>';}).join('');})();
 document.addEventListener('click',function(e){var p=document.getElementById('filter-panel');if(p.classList.contains('open')&&!p.contains(e.target)&&!document.getElementById('filter-btn').contains(e.target)){p.classList.remove('open');document.getElementById('filter-btn').classList.remove('on');}});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){['modal-transp','modal-edit'].forEach(fecharModal);}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){fecharModal('modal-edit');}});
 window.addEventListener('load',carregarDados);
 </script>
 </body>
