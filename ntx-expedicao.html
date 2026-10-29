@@ -154,10 +154,10 @@ svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dash>.card{padding:18px 22px 20px}.dash .card-t{font-size:18px}
 .dash .kpi{min-height:0}.dash .kpi .v{font-size:30px;margin-top:10px}
 .d1{grid-area:d1}.d2{grid-area:d2}.d3{grid-area:d3}.d4{grid-area:d4}.d-vt{grid-area:vt}.d-mc{grid-area:mc}.d-fm{grid-area:fm}.d-mp{grid-area:mp}.d-dg{grid-area:dg}
-.hb{display:flex;flex-direction:column;gap:22px;margin-top:22px}
+.hb{display:flex;flex-direction:column;gap:14px;margin-top:18px}.dash .chart-wrap svg{min-width:0}
 .hb-r{display:grid;grid-template-columns:minmax(90px,170px) 1fr auto;align-items:center;gap:12px;font-size:13px}
 .hb-n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hb-t{height:18px;border-radius:9px;background:var(--line-2);overflow:hidden}.hb-t i{display:block;height:100%;border-radius:7px;background:var(--bar)}
+.hb-t{height:14px;border-radius:7px;background:var(--line-2);overflow:hidden}.hb-t i{display:block;height:100%;border-radius:7px;background:var(--bar)}
 .hb-v{font-weight:700;min-width:70px;text-align:right}.hb-v small{display:block;font-weight:400;color:var(--text-3);font-size:11px}
 .mc-name{font-size:20px;font-weight:700;margin-top:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mc-stats{display:flex;gap:26px;margin-top:8px;font-size:12px;color:var(--text-3)}.mc-stats b{display:block;font-size:17px;color:var(--text)}
@@ -366,7 +366,7 @@ function renderDash(){
   s('d-notas',fmt(l.length));s('d-notas-s',fmt(pend)+' pendentes · '+fmt(l.length-pend)+' embarcadas');s('d-vol',fmt(vol));s('d-vol-s','em '+fmt(l.length)+' notas');s('d-peso',fmtD(peso));s('d-met',fmtD(met));
   /* volumes por transportadora */
   var tp={};l.forEach(function(n){var k=n.transportadora||'(Sem transportadora)';var o=tp[k]||(tp[k]={v:0,n:0});o.v+=n.volumes||0;o.n++;});
-  var tk=Object.keys(tp).sort(function(a,b){return tp[b].v-tp[a].v;}),mx=tk.length?tp[tk[0]].v||1:1;
+  var tk=Object.keys(tp).sort(function(a,b){return tp[b].v-tp[a].v;}),mx=tk.length?tp[tk[0]].v||1:1;if(tk.length>6){var ou={v:0,n:0},nx=tk.length-5;tk.slice(5).forEach(function(k){ou.v+=tp[k].v;ou.n+=tp[k].n;});tk=tk.slice(0,5);tp['Outras ('+nx+')']=ou;tk.push('Outras ('+nx+')');mx=Math.max.apply(null,tk.map(function(k){return tp[k].v;}))||1;}
   document.getElementById('d-vt').innerHTML=tk.length?tk.map(function(k){return'<div class="hb-r"><span class="hb-n" title="'+esc(k)+'">'+esc(k)+'</span><span class="hb-t"><i style="width:'+Math.max(2,tp[k].v/mx*100)+'%"></i></span><span class="hb-v">'+fmt(tp[k].v)+'<small>'+fmt(tp[k].n)+' notas</small></span></div>';}).join(''):'<div class="empty">Sem dados.</div>';
   /* melhor cliente */
   var cl={};l.forEach(function(n){var k=n.cliente||'(Sem cliente)';var o=cl[k]||(cl[k]={v:0,n:0,m:0});o.v+=n.volumes||0;o.n++;o.m+=n.metragem||0;});
@@ -375,7 +375,7 @@ function renderDash(){
   else{var b=cl[ck[0]];mc.innerHTML='<div class="mc-name" title="'+esc(ck[0])+'">'+esc(ck[0])+'</div><div class="mc-stats"><div><b>'+fmt(b.v)+'</b>volumes</div><div><b>'+fmt(b.n)+'</b>notas</div><div><b>'+fmtD(b.m)+'</b>metros</div><div><b>'+(vol?Math.round(b.v/vol*100):0)+'%</b>do total</div></div>'+(ck.length>1?'<div class="mc-run">'+ck.slice(1,3).map(function(k,i){return'<span><span>'+(i+2)+'º '+esc(k)+'</span><em>'+fmt(cl[k].v)+' vol.</em></span>';}).join('')+'</div>':'');}
   /* faturamento mês (metros por mês de emissão) */
   var pm={};l.forEach(function(n){var d=parseDateBR(n.emissao);if(d.getFullYear()<2000)return;var k=d.getFullYear()*100+d.getMonth();pm[k]=(pm[k]||0)+(n.metragem||0);});
-  var mk=Object.keys(pm).map(Number).sort(function(a,b){return a-b;}).slice(-6),el=document.getElementById('d-fm');
+  var mk=Object.keys(pm).map(Number).sort(function(a,b){return a-b;}).slice(-12),el=document.getElementById('d-fm');
   if(!mk.length)el.innerHTML='<div class="empty">Sem dados.</div>';
   else{var M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],W=560,H=200,pad=28,bw=Math.min(60,(W-40)/mk.length-14),mv=Math.max.apply(null,mk.map(function(k){return pm[k];}))||1,sv='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Metros por mês"><line x1="0" y1="'+(H-pad)+'" x2="'+W+'" y2="'+(H-pad)+'" style="stroke:var(--line)"/>';
     mk.forEach(function(k,i){var cx=W/(mk.length)*(i+.5),h=Math.max(2,pm[k]/mv*(H-pad-26)),y=H-pad-h;sv+='<rect x="'+(cx-bw/2)+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="5" style="fill:var(--bar)"><title>'+M[k%100]+'/'+Math.floor(k/100)+': '+fmtD(pm[k])+' m</title></rect><text x="'+cx+'" y="'+(y-6)+'" text-anchor="middle" font-size="12" font-weight="700" style="fill:var(--chart-txt)">'+fmt(Math.round(pm[k]))+'</text><text x="'+cx+'" y="'+(H-9)+'" text-anchor="middle" font-size="12" style="fill:var(--text-2)">'+M[k%100]+'/'+String(Math.floor(k/100)).slice(2)+'</text>';});
