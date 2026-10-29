@@ -172,6 +172,21 @@ svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke
 .dg-wrap .tbl th{position:sticky;top:0;z-index:1}
 @media(max-width:1280px){.dash{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"d1 d2 d3 d4" "vt vt mc mc" "vt vt fm fm" "mp mp mp mp" "dg dg dg dg"}}
 @media(max-width:900px){.dash{grid-template-columns:1fr 1fr;grid-template-areas:"d1 d2" "d3 d4" "vt vt" "mc mc" "fm fm" "mp mp" "dg dg";gap:14px}}
+.cli-sel{position:relative}
+.cli-btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:12px;border:1px solid rgba(255,255,255,.28);color:#fff;font-size:14px;font-weight:600;max-width:300px;transition:background .15s}
+.cli-btn:hover,.cli-btn.on{background:rgba(255,255,255,.12)}
+.cli-btn svg{width:20px;height:20px}.cli-btn .car{width:16px;height:16px;transition:transform .15s}.cli-btn.on .car{transform:rotate(180deg)}
+.cli-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cli-pn{display:none;position:absolute;top:calc(100% + 10px);left:0;z-index:70;width:min(340px,86vw);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 48px rgba(0,0,0,.28);padding:14px}
+.cli-pn.open{display:block}
+.cli-pn input[type=text]{width:100%;height:38px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface);color:var(--text)}
+.cli-pn input[type=text]:focus{outline:none;border-color:var(--strong);box-shadow:0 0 0 3px var(--ring)}
+.cli-act{display:flex;justify-content:space-between;align-items:center;margin:10px 2px 6px;font-size:12px;color:var(--text-3)}
+.cli-act button{font-size:12.5px;font-weight:600;color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.cli-list{max-height:300px;overflow-y:auto;display:flex;flex-direction:column}
+.cli-it{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px;cursor:pointer;font-size:13px}
+.cli-it:hover{background:var(--hover)}.cli-it input{width:16px;height:16px;accent-color:var(--strong);flex-shrink:0}
+.cli-it span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cli-it em{font-style:normal;font-size:11.5px;color:var(--text-3)}
 @media(max-width:1600px){html{zoom:.8}:root{--side:242px}.nav-link{font-size:14.5px;white-space:nowrap}}
 .tbl td.cli{max-width:300px;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:1280px){
@@ -209,6 +224,8 @@ svg.i{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke
     <button class="menu-btn" onclick="abrirMenu()" aria-label="Menu"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
     <div><div class="h-title">PEDIDOS NORTEX</div><div class="h-sub" id="h-sub">Controle de Embarque NORTEX</div></div>
     <button class="filter-btn" id="filter-btn" onclick="toggleFiltro()" aria-label="Filtros" title="Filtros"><svg class="i" viewBox="0 0 24 24"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></svg><span class="filter-count" id="filter-count">0</span></button>
+    <div class="cli-sel" id="cli-sel" style="display:none"><button class="cli-btn" id="cli-btn" onclick="toggleCli()" aria-haspopup="true"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3c2 .7 3.5 2.6 3.5 5.7"/></svg><span id="cli-lbl">Todos os clientes</span><svg class="i car" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="cli-pn" id="cli-pn"><input type="text" id="cli-q" placeholder="Buscar cliente..." oninput="renderCliList()" autocomplete="off"><div class="cli-act"><button onclick="cliLimpar()">Todos os clientes</button><span id="cli-cnt"></span></div><div class="cli-list" id="cli-list"></div></div></div>
     <div class="h-right"><span class="ts" id="ts"></span><button class="icon-btn theme-btn" onclick="alternarTema()" title="Alternar tema claro/escuro" aria-label="Alternar tema"><svg class="i sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><button class="icon-btn" onclick="carregarDados()" title="Atualizar dados" aria-label="Atualizar"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button></div>
     <div id="filter-panel">
       <div class="fp-title">Filtros</div>
@@ -313,7 +330,7 @@ function dateBRtoISO(s){if(!s)return'';var p=String(s).split('/');return p.lengt
 /* navegação */
 function abrirMenu(){document.getElementById('side').classList.add('open');document.getElementById('side-overlay').classList.add('open');}
 function fecharMenu(){document.getElementById('side').classList.remove('open');document.getElementById('side-overlay').classList.remove('open');}
-function irPara(p){document.querySelectorAll('.nav-link').forEach(function(b){b.classList.toggle('active',b.dataset.page===p);});document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+p);});document.getElementById('filter-btn').style.visibility=(p==='embarque'||p==='visao')?'visible':'hidden';document.getElementById('h-sub').textContent=p==='visao'?'DASHBOARD GERAL':'Controle de Embarque NORTEX';if(p==='visao'){var fm=document.getElementById('d-fm');fm.scrollLeft=fm.scrollWidth;}document.getElementById('filter-panel').classList.remove('open');document.getElementById('filter-btn').classList.remove('on');fecharMenu();}
+function irPara(p){document.querySelectorAll('.nav-link').forEach(function(b){b.classList.toggle('active',b.dataset.page===p);});document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+p);});document.getElementById('filter-btn').style.visibility=(p==='embarque'||p==='visao')?'visible':'hidden';document.getElementById('cli-sel').style.display=p==='visao'?'block':'none';if(p!=='visao'){document.getElementById('cli-pn').classList.remove('open');document.getElementById('cli-btn').classList.remove('on');}document.getElementById('h-sub').textContent=p==='visao'?'DASHBOARD GERAL':'Controle de Embarque NORTEX';if(p==='visao'){var fm=document.getElementById('d-fm');fm.scrollLeft=fm.scrollWidth;}document.getElementById('filter-panel').classList.remove('open');document.getElementById('filter-btn').classList.remove('on');fecharMenu();}
 function fecharModal(id){document.getElementById(id).classList.remove('open');if(id==='modal-edit')nfEmEdicao=null;}
 
 /* dados */
@@ -363,7 +380,7 @@ var MAPA_BR={"AC":{"d":"M5.2 174.7L18 180.7L49 187.9L71.2 199.9L99.7 212.4L99.6 
 var REGIOES={Norte:['AC','AM','AP','PA','RO','RR','TO'],Nordeste:['AL','BA','CE','MA','PB','PE','PI','RN','SE'],'Centro-Oeste':['DF','GO','MS','MT'],Sudeste:['ES','MG','RJ','SP'],Sul:['PR','RS','SC']};
 var MAPA_OUT={RN:[580,128],PB:[580,156],PE:[580,184],AL:[580,212],SE:[580,240],ES:[545,352],RJ:[520,396],DF:[575,300]};
 function renderDash(){
-  var all=FILT;if(UF_SEL&&!all.some(function(n){return String(n.uf||'').toUpperCase().trim()===UF_SEL;}))UF_SEL='';
+  var all=FILT,ca=cliAtivos();if(ca.length)all=all.filter(function(n){return CLI_SEL[n.cliente||'(Sem cliente)'];});if(UF_SEL&&!all.some(function(n){return String(n.uf||'').toUpperCase().trim()===UF_SEL;}))UF_SEL='';
   var l=UF_SEL?all.filter(function(n){return String(n.uf||'').toUpperCase().trim()===UF_SEL;}):all,pend=0,vol=0,peso=0,met=0;
   l.forEach(function(n){if(!n.embarcada)pend++;vol+=n.volumes||0;peso+=n.pesoBruto||0;met+=n.metragem||0;});
   var s=function(id,v){document.getElementById(id).textContent=v;};
@@ -405,6 +422,16 @@ function renderMapa(l){
   var nr=Object.keys(REGIOES).map(function(r){var c=0;REGIOES[r].forEach(function(u){if(por[u])c+=por[u].n;});return[r,c];}).sort(function(a,b){return b[1]-a[1];});
   document.getElementById('d-reg').innerHTML=tot?nr.map(function(x){return'<div><span>'+x[0]+':</span><b>'+(x[1]/tot*100).toFixed(1).replace('.',',')+'%</b></div>';}).join(''):'';
 }
+
+/* Filtro de clientes (Dashboard) */
+var CLI_SEL={},CLI_LIST=[];
+function cliAtivos(){return Object.keys(CLI_SEL);}
+function toggleCli(){var p=document.getElementById('cli-pn'),b=document.getElementById('cli-btn'),o=!p.classList.contains('open');p.classList.toggle('open',o);b.classList.toggle('on',o);if(o){document.getElementById('cli-q').value='';renderCliList();document.getElementById('cli-q').focus();}}
+function renderCliList(){var c={};DADOS.forEach(function(n){var k=n.cliente||'(Sem cliente)';c[k]=(c[k]||0)+1;});CLI_LIST=Object.keys(c).sort(function(a,b){return a.localeCompare(b,'pt-BR');});var q=document.getElementById('cli-q').value.trim().toLowerCase(),h='';CLI_LIST.forEach(function(k,i){if(q&&k.toLowerCase().indexOf(q)<0)return;h+='<label class="cli-it"><input type="checkbox"'+(CLI_SEL[k]?' checked':'')+' onchange="togCli('+i+')"><span title="'+esc(k)+'">'+esc(k)+'</span><em>'+c[k]+'</em></label>';});document.getElementById('cli-list').innerHTML=h||'<div class="empty">Nenhum cliente encontrado.</div>';var n=cliAtivos().length;document.getElementById('cli-cnt').textContent=n?n+' selecionado'+(n>1?'s':''):CLI_LIST.length+' clientes';}
+function togCli(i){var k=CLI_LIST[i];if(CLI_SEL[k])delete CLI_SEL[k];else CLI_SEL[k]=1;atualizarCliBtn();renderDash();var n=cliAtivos().length;document.getElementById('cli-cnt').textContent=n?n+' selecionado'+(n>1?'s':''):CLI_LIST.length+' clientes';}
+function cliLimpar(){CLI_SEL={};atualizarCliBtn();renderDash();renderCliList();}
+function atualizarCliBtn(){var a=cliAtivos();document.getElementById('cli-lbl').textContent=!a.length?'Todos os clientes':(a.length===1?a[0]:a.length+' clientes');}
+document.addEventListener('click',function(e){var w=document.getElementById('cli-sel');if(w&&!w.contains(e.target)){document.getElementById('cli-pn').classList.remove('open');document.getElementById('cli-btn').classList.remove('on');}});
 /* edição */
 function abrirEdicao(nf){var n=DADOS.find(function(d){return String(d.nf)===String(nf);});if(!n){showToast('Nota não encontrada.',true);return;}nfEmEdicao=String(nf);document.getElementById('me-label').textContent='— NF '+n.nf;var set=function(id,v){document.getElementById(id).value=v;};set('e-nf',n.nf||'');set('e-emissao',dateBRtoISO(n.emissao));set('e-cli',n.cliente||'');set('e-uf',n.uf||'');set('e-vol',n.volumes||'');set('e-peso',n.pesoBruto||'');set('e-met',n.metragem||'');set('e-col',(n.dataColeta&&String(n.dataColeta).toUpperCase()!=='A DEFINIR')?n.dataColeta:'');set('e-transp',n.transportadora||'');set('e-ret',n.retida?'sim':'nao');set('e-emb',n.embarcada?'sim':'nao');document.getElementById('modal-edit').classList.add('open');}
 function salvarEdicao(){if(!nfEmEdicao){showToast('Nenhuma nota selecionada.',true);return;}var g=function(id){return document.getElementById(id).value;};var nf=g('e-nf').trim(),cli=g('e-cli').trim(),uf=g('e-uf'),tr=g('e-transp').trim();if(!nf||!cli||!uf||!tr){showToast('Preencha os campos obrigatórios (*).',true);return;}var er=g('e-emissao'),ef='';if(er){var p=er.split('-');ef=p[2]+'/'+p[1]+'/'+p[0];}var col=g('e-col').trim()||'A DEFINIR';var campos={nf:nf,emissao:ef,cliente:cli,uf:uf,volumes:Number(g('e-vol'))||0,pesoBruto:Number(g('e-peso'))||0,metragem:Number(g('e-met'))||0,dataColeta:col,transportadora:tr,retida:g('e-ret')==='sim',embarcada:g('e-emb')==='sim'};showToast('Salvando alterações...');apiCall('POST','/atualizar',{nf:nfEmEdicao,campos:campos}).then(function(r){showToast(r.mensagem||'Salvo.',!r.sucesso);if(r.sucesso){fecharModal('modal-edit');carregarDados();}}).catch(function(e){showToast('Erro ao salvar: '+e.message,true);});}
